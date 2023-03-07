@@ -18,9 +18,18 @@ var jwt = require('jsonwebtoken');
 app.get('/register', (req, res) => {
     res.render('register')
 })
-app.get('/login', (req, res) => {
-    let error = false;
-    res.render('login', { error })
+app.get('/login', async (req, res) => {
+    console.log("here");
+    const token = await req.cookies['Access_token'];
+
+    if (token) {
+        res.redirect('/home')
+    }
+    else {
+        let error = false;
+        res.render('login', { error })
+    }
+
 })
 
 app.post('/', (req, res) => {
@@ -77,7 +86,7 @@ app.post('/login', async (req, res) => {
             if (match) {
                 const token = jwt.sign({ UserData }, process.env.JWT_SECRET);
                 // res.status(201).json(token);
-                res.cookie('Access_token', token)
+                res.cookie('Access_token', token, { httpOnly: true })
                 res.redirect('/home')
             }
             else {
@@ -100,9 +109,15 @@ app.post('/login', async (req, res) => {
         }
         else {
             const verified = jwt.verify(token, process.env.JWT_SECRET)
+            console.log(verified);
             res.render('home', { user: verified.UserData });
         }
 
+    })
+
+    app.post('/logout',(req,res)=>{
+        res.clearCookie('Access_token');
+        res.redirect('/login');
     })
 
 })
