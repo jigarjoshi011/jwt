@@ -98,29 +98,125 @@ app.post('/login', async (req, res) => {
     } catch (error) {
         throw error
     }
+})
+
+app.get('/home', async (req, res) => {
+    console.log("here");
+    const token = await req.cookies['Access_token'];
+
+    if (!token) {
+        res.redirect('/login')
+    }
+    else {
+        const verified = jwt.verify(token, process.env.JWT_SECRET)
+        console.log(verified);
+        res.render('home', { user: verified.UserData });
+    }
+
+})
+
+app.post('/logout', (req, res) => {
+    res.clearCookie('Access_token');
+    res.redirect('/login');
+})
 
 
-    app.get('/home', async (req, res) => {
-        console.log("here");
-        const token = await req.cookies['Access_token'];
 
-        if (!token) {
-            res.redirect('/login')
-        }
+let name
+let email;
+app.get('/update/:id', async(req, res) => {
+    let get_id = req.params.id;
+    const token = await req.cookies['Access_token'];
+    let decode = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decode.UserData.id);
+    if (decode.UserData.id != get_id) {
+    
+        console.log("i am here");
+        return res.render("unauth")
+    }
+    console.log(get_id);
+    let qrygetname = `select name from Jwt_prac.users where id=${get_id};`
+    conn.query(qrygetname, (err, result) => {
+        if (err) return err;
         else {
-            const verified = jwt.verify(token, process.env.JWT_SECRET)
-            console.log(verified);
-            res.render('home', { user: verified.UserData });
+            name = result[0].name
         }
-
     })
+    let qrygetemail = `select email from Jwt_prac.users where id=${get_id};`
+    conn.query(qrygetemail, (err, result) => {
+        if (err) return err;
+        else {
+            email = result[0].email;
 
-    app.post('/logout',(req,res)=>{
-        res.clearCookie('Access_token');
-        res.redirect('/login');
+
+        }
+        let msg = false
+        let error = false
+        res.render('update', { name, email, get_id, msg, error })
     })
 
 })
+
+
+app.post('/update/:id', (req, res) => {
+    let get_id = req.query.id;
+
+    const { email, password, newpassword, name } = req.body;
+    console.log(email, name, password, newpassword);
+
+    async function updateUser(email, password, newpassword, name) {
+        if (!(email && password && name && newpassword)) {
+            res.status(400).send("All input is required");
+        }
+        const qry1 = `select * from Jwt_prac.users where email='${email}'`
+        // console.log(qry1);
+        const oldPass = await queryExecuter(qry1)
+        console.log(oldPass);
+        if (oldPass.length == 0) {
+            let error = true
+            let msg = false
+            // console.log("i am here");
+            return res.render("update", { msg, error, get_id, name, email })
+        }
+
+        async function checkUser(email, password) {
+            const match = await bcrypt.compare(password, oldPass[0].password);
+            if (match) {
+
+                if (password == newpassword) {
+                    let error = true
+                    let msg = false
+                    return res.render("update", { msg, error, get_id, name, email })
+                }
+                else {
+                    const salt = await bcrypt.genSalt(10);
+                    const newhashedPassword = await bcrypt.hash(newpassword, salt);
+                    const qry = `update Jwt_prac.users set name = '${name}', password='${newhashedPassword}' where email='${email}'`
+                    const result = await queryExecuter(qry)
+                    if (result) {
+                        let msg = true
+                        let error = false
+                        console.log("I am here");
+                        return res.render('update', { error, msg, get_id, name, email })
+
+                    }
+                }
+
+            }
+            else {
+                let error = true
+                let msg = false
+                return res.render("update", { msg, error, get_id, name, email })
+            }
+        }
+        checkUser(email, password)
+    }
+
+    updateUser(email, password, newpassword, name)
+})
+
+
+
 async function queryExecuter(query) {
     return new Promise((resolve, rejects) => {
         conn.query(query, (err, result) => {

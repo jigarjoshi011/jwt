@@ -144,129 +144,51 @@
 
 <body>
   <div class="container">
-    <form id="form" class="form" action="/" method="post" onsubmit="return validate()">
-      <h2 ><span class="glyphicon glyphicon-heart"> Hey User, register! </span> </h2>
+    <form id="form" class="form" action="/update/<%= get_id  %>" method="post" onsubmit="return validate()">
+      <h2 ><span class="glyphicon glyphicon-heart"> Hey User, Update! </span> </h2>
       <div class="form-control">
         <label for="username">Username</label>
-        <input type="text" id="username" name="name" placeholder="Enter username" onchange="checkusername()" />
+        <input type="text" id="username" name="name" value="<%= name %>" placeholder="Enter username" required />
         <small>Error message</small>
       </div>
       <div class="form-control">
         <label for="email">Email</label>
-        <input type="text" id="email" name="email" placeholder="Enter email" />
+        <input type="text" id="email" name="email" placeholder="Enter email" value="<%= email %>" readonly />
         <small>Error message</small>
       </div>
       <div class="form-control">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter password" />
+        <label for="password">Old password</label>
+        <input type="password" id="password" name="password" placeholder="Enter current password" required/>
         <small>Error message</small>
       </div>
       <div class="form-control">
-        <label for="password2">Confirm password</label>
-        <input type="password" id="password2" name="cpassword" placeholder="Renter your password" />
+        <label for="password2">New password</label>
+        <input type="password" id="newpassword" name="newpassword" placeholder="Enter your New password" required/>
         <small>Error message</small>
       </div>
 
-      <button id type="submit">Submit</button>
-      <p class="message">Have registered? <a href="/login">Login to account</a></p>
+      <button id type="submit">Update</button>
+      <br>
+      <% if(msg){%>
+        <small style="color: #1c800f;">User Updated Successfully</small>
+        <% } %>
+      <% if(error){%>
+        <small style="color: #b9370f;">Something Went Wrong!</small>
+        <% } %>
+
+      <p class="message">Back to Home <a href="/home">Home</a></p>
     </form>
   </div>
 
 </body>
 <script>
-  function checkusername(){
-    
-  }
   function validate() {
     var pw1 = document.getElementById("password").value;
-    var pw2 = document.getElementById("password2").value;
-    if (pw1 != pw2) {
-      alert("Passwords did not match");
+    var pw2 = document.getElementById("newpassword").value;
+    if (pw1 == pw2) {
+      alert("Old password and new password cannot be same!");
       return false
     }
-    const form = document.getElementById('form');
-    const username = document.getElementById('username');
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const password2 = document.getElementById('password2');
-
-    //Show input error message
-    function showError(input, message) {
-      //gets the parent div
-      const formControl = input.parentElement;
-      //applies error class and reapplies form-control class
-      formControl.className = 'form-control error';
-      //finds the small tag within this div
-      const small = formControl.querySelector('small');
-      //inserts the message parameter into the small tag
-      small.innerText = message;
-    }
-
-    //Show success outline
-    function showSuccess(input) {
-      //gets the parent div
-      const formControl = input.parentElement;
-      //applies success class and reapplies form-control class
-      formControl.className = 'form-control success';
-    }
-
-    //Check to see if email is valid
-    function checkEmail(input) {
-      const regExEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
-      //if (regular expression representing a valid email, then true else false)
-      if (regExEmail.test(input.value.trim())) {
-        showSuccess(input);
-      } else {
-        showError(input, 'Not a real email bub');
-      }
-    }
-
-    //check required fields
-    function checkRequired(inputArr) {
-      //iterate through each slot in inputArr
-      inputArr.forEach(function (input) {
-        //if not null, show success
-        if (input.value.trim() === '') {
-          console.log(input.id);
-          showError(input, `${getFieldName(input)} is required bub`);
-        } else {
-          showSuccess(input);
-        }
-      });
-    }
-
-    //check whether an input is between a min and max length
-    function checkLength(input, min, max) {
-      if (input.value.length < min) {
-        showError(
-          input,
-          `${getFieldName(input)}'s gotta be over ${min} characters bub`
-        );
-      } else if (input.value.length > max) {
-        showError(
-          input,
-          `${getFieldName(input)}'s gotta be under ${max} characters bub`
-        );
-      }
-    }
-
-    // Check if the passwords match
-    function checkPasswords(input1, input2) {
-      if (input1.value !== input2.value) {
-        showError(input2, 'Those dont match bub');
-      } else {
-        // showSuccess(input);
-      }
-    }
-
-    //Get the fieldname
-    //finds first letter and uppercases it, then slices off the old first letter and concatenates
-    function getFieldName(input) {
-      return input.id.charAt(0).toUpperCase() + input.id.slice(1);
-    }
-
-    return true
 
 
   }
