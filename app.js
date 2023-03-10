@@ -2,6 +2,7 @@ const express = require("express");
 const conn = require('./connection/connectDB');
 const bodyParser = require('body-parser')
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 require('dotenv').config()
 const app = express();
 const router = express.Router();
@@ -16,10 +17,11 @@ var jwt = require('jsonwebtoken');
 
 
 app.get('/register', (req, res) => {
-    res.render('register')
+    let flag = false
+    res.render('register', { flag })
 })
 app.get('/login', async (req, res) => {
-    console.log("here");
+    // console.log("here");
     const token = await req.cookies['Access_token'];
 
     if (token) {
@@ -32,9 +34,39 @@ app.get('/login', async (req, res) => {
 
 })
 
+app.post('/checkuser', async (req, res) => {
+    const { data } = req.body
+    // console.log(data);
+
+    const qry1 = `select * from Jwt_prac.users where name='${data}'`
+    // console.log(qry1);
+    const oldUser = await queryExecuter(qry1)
+    if (oldUser.length == 0) {
+        let isNew = true
+        res.json({ isNew });
+    }
+    else {
+        let isNew = false
+        res.json({ isNew });
+    }
+})
+app.post('/checkuseremail', async (req, res) => {
+    const { data } = req.body
+    const qry1 = `select * from Jwt_prac.users where email='${data}'`
+    const oldUser = await queryExecuter(qry1)
+    if (oldUser.length == 0) {
+        let isNew = true
+        res.json({ isNew });
+    }
+    else {
+        let isNew = false
+        res.json({ isNew });
+    }
+})
+
 app.post('/', (req, res) => {
     const { name, email, password, cpassword, } = req.body;
-    console.log(name, email, password, cpassword);
+    // console.log(name, email, password, cpassword);
 
     async function register(name, email, password, cpassword) {
         try {
@@ -46,7 +78,8 @@ app.post('/', (req, res) => {
             const oldUser = await queryExecuter(qry1)
             // console.log(oldUser);
             if (oldUser.length != 0) {
-                return res.render('Error_Page');
+                let flag = true
+                return res.render('register', { flag });
             }
             else {
                 const salt = await bcrypt.genSalt(10);
@@ -56,7 +89,16 @@ app.post('/', (req, res) => {
                 const result = await queryExecuter(qry)
 
                 if (result) {
-                    res.redirect('/login')
+
+                    // console.log(result);
+                    let id = result.insertId
+                    // console.log(id);
+                    const token = crypto.randomBytes(32).toString('hex');
+
+                    const activationUrl = `https://example.com/activate-account/${token}`;
+
+                    res.render('activate_page', { activated: false, activationUrl: activationUrl, userID: id });
+
 
                 }
             }
@@ -67,16 +109,31 @@ app.post('/', (req, res) => {
 
     register(name, email, password, cpassword)
 })
+app.get('/actiivateUser', async (req, res) => {
+    const userID = req.query.id;
+    // console.log(userID);
+    const update_query = `UPDATE Jwt_prac.users SET isActive = '1' WHERE (id = ${parseInt(userID)});`
+    const result = await queryExecuter(update_query);
+    // res.render('activate_page', { activated: true });
+    res.redirect('/login')
 
+})
 app.post('/login', async (req, res) => {
     try {
 
         const { email, password } = req.body
         // console.log(email, password);
-        let log_qry = `select * from Jwt_prac.users where email='${email}'`;
+        let log_qry = `select * from Jwt_prac.users where email='${email}' and isActive = '1'`;
+
         const result = await queryExecuter(log_qry);
+        // console.log(result);
         if (result.length == 0) {
             return res.status(401).send('Invalid credentials');
+        }
+        else if (result[0].isActive == '0') {
+            let id = result[0].id
+            // console.log(id);
+            return res.render('activate_page', { activated: false, activationUrl: activationUrl, userID: id })
         }
         // console.log(result);
         let dbPassword = result[0].password;
@@ -101,7 +158,7 @@ app.post('/login', async (req, res) => {
 })
 
 app.get('/home', async (req, res) => {
-    console.log("here");
+    // console.log("here");
     const token = await req.cookies['Access_token'];
 
     if (!token) {
@@ -109,7 +166,7 @@ app.get('/home', async (req, res) => {
     }
     else {
         const verified = jwt.verify(token, process.env.JWT_SECRET)
-        console.log(verified);
+        // console.log(verified);
         res.render('home', { user: verified.UserData });
     }
 
@@ -124,17 +181,17 @@ app.post('/logout', (req, res) => {
 
 let name
 let email;
-app.get('/update/:id', async(req, res) => {
+app.get('/update/:id', async (req, res) => {
     let get_id = req.params.id;
     const token = await req.cookies['Access_token'];
     let decode = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decode.UserData.id);
+    // console.log(decode.UserData.id);
     if (decode.UserData.id != get_id) {
-    
+
         console.log("i am here");
         return res.render("unauth")
     }
-    console.log(get_id);
+    // console.log(get_id);
     let qrygetname = `select name from Jwt_prac.users where id=${get_id};`
     conn.query(qrygetname, (err, result) => {
         if (err) return err;
@@ -156,13 +213,11 @@ app.get('/update/:id', async(req, res) => {
     })
 
 })
-
-
 app.post('/update/:id', (req, res) => {
     let get_id = req.query.id;
 
     const { email, password, newpassword, name } = req.body;
-    console.log(email, name, password, newpassword);
+    // console.log(email, name, password, newpassword);
 
     async function updateUser(email, password, newpassword, name) {
         if (!(email && password && name && newpassword)) {
@@ -171,7 +226,7 @@ app.post('/update/:id', (req, res) => {
         const qry1 = `select * from Jwt_prac.users where email='${email}'`
         // console.log(qry1);
         const oldPass = await queryExecuter(qry1)
-        console.log(oldPass);
+        // console.log(oldPass);
         if (oldPass.length == 0) {
             let error = true
             let msg = false
@@ -196,7 +251,7 @@ app.post('/update/:id', (req, res) => {
                     if (result) {
                         let msg = true
                         let error = false
-                        console.log("I am here");
+                        // console.log("I am here");
                         return res.render('update', { error, msg, get_id, name, email })
 
                     }
