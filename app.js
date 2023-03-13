@@ -10,10 +10,11 @@ const cookieParser = require('cookie-parser')
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
-app.use(express.static("public"));
 app.use(express.static(__dirname + '/public'));
+console.log(__dirname + '/public');
 app.set("view engine", "ejs");
 var jwt = require('jsonwebtoken');
+const expiresIn = 3600; //
 
 
 app.get('/register', (req, res) => {
@@ -21,10 +22,20 @@ app.get('/register', (req, res) => {
     res.render('register', { flag })
 })
 app.get('/login', async (req, res) => {
+    let solve
     // console.log("here");
     const token = await req.cookies['Access_token'];
+    if(token){
+        try {
+     
+            solve = jwt.verify(token, process.env.JWT_SECRET);
+            
+        } catch (error) {
+            console.log(error);
+        }        
+    }
 
-    if (token) {
+    if (token && solve) {
         res.redirect('/home')
     }
     else {
@@ -63,7 +74,7 @@ app.post('/checkuseremail', async (req, res) => {
         res.json({ isNew });
     }
 })
-
+//register
 app.post('/', (req, res) => {
     const { name, email, password, cpassword, } = req.body;
     // console.log(name, email, password, cpassword);
@@ -141,9 +152,9 @@ app.post('/login', async (req, res) => {
         async function checkUser(email, password) {
             const match = await bcrypt.compare(password, dbPassword);
             if (match) {
-                const token = jwt.sign({ UserData }, process.env.JWT_SECRET);
+                const token = jwt.sign({ UserData }, process.env.JWT_SECRET ,{expiresIn});
                 // res.status(201).json(token);
-                res.cookie('Access_token', token, { httpOnly: true })
+                res.cookie('Access_token', token , { httpOnly: true })
                 res.redirect('/home')
             }
             else {
@@ -176,8 +187,6 @@ app.post('/logout', (req, res) => {
     res.clearCookie('Access_token');
     res.redirect('/login');
 })
-
-
 
 let name
 let email;

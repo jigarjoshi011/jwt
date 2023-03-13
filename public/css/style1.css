@@ -1,0 +1,43 @@
+.btmns {
+    width: 100px;
+    height: 30px;
+    color: black;
+    font-weight: 900;
+    font-size: large;
+  }
+
+  .container {
+    max-width: 1170px;
+    margin: 0 auto;
+    padding: 0 16px;
+    /* border: 1px solid red; */
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0px;
+  }
+
+  .card {
+    margin-top: 35px;
+    font-size: 18px;
+    box-shadow: rgb(0 0 0 / 20%) 0px 4px 8px 0px;
+    transition: all 0.3s ease 0s;
+    width: calc(100%/3.2);
+    border-radius: 15px;
+    font-family: "Open Sans", sans-serif;
+    padding: 10px;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+.allcards{
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+}

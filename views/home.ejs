@@ -1,53 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <title>Bootstrap Example</title>
+  <title>Welcome <%= user.name %>
+  </title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="css/style1.css">
 </head>
-<style>
-    .btmns{
-        width: 100px;
-        height: 30px;
-        color: black;
-        font-weight: 900;
-        font-size: large;
-    }
-</style>
+
 <body>
 
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">23DEV049</a>
-    </div>
-    <ul class="nav navbar-nav">
-      <li class="active"><a href="/home">Home</a></li>
-     
-      <li><a href="#">Page 2</a></li>
-    </ul>
-    <form action="/logout" method="post" >    
-        <ul class="nav navbar-nav navbar-right" >
-            <li><a><input class="btmns" type="submit" value="log-out" ></a></li>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">23DEV049</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/home">Home</a></li>
 
-          </ul>
-    </form>
-    <form action="/update/<%= user.id  %>" method="get">    
+        <li><a href="#">Page 2</a></li>
+      </ul>
+      <form action="/logout" method="post">
         <ul class="nav navbar-nav navbar-right">
-            <li><a><input class="btmns" type="submit" value="Profile"></a></li>
-          </ul>
-    </form>
-   
+          <li><a><input class="btmns" type="submit" value="log-out"></a></li>
+
+        </ul>
+      </form>
+      <form action="/update/<%= user.id  %>" method="get">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a><input class="btmns" type="submit" value="Profile"></a></li>
+        </ul>
+      </form>
+
+    </div>
+  </nav>
+
+  <div class="siteWrap">
+    <div class="container">
+      <h3>Welcome <%= user.name %>
+      </h3>
+
+      <h2>Projects</h2>
+      <div class="allcards">
+        <div class="card" ">
+          <img class="card-img-top" src="/images/images.jpeg" alt="Card image" style="width:100%">
+          <div class="card-body">
+            <h2 class="card-title">Tic Tac Toe</h2>
+            <p class="card-text">The game is simple to learn but can become quite complex as players develop more
+              advanced
+              strategies and tactics. </p>
+            <a href="https://tictactoe-jigar.netlify.app/" class="btn btn-primary">Click here</a>
+          </div>
+        </div>
+        <div class="card" >
+          <img class="card-img-top" src="/images/cc.jpeg" alt="Card image" style="width:100%" height="340px">
+          <div class="card-body">
+            <h2 class="card-title">Color Cube</h2>
+            <p class="card-text">The game is simple to learn but can become quite complex as players develop more
+              advanced
+              strategies and tactics. </p>
+            <a href="https://startling-druid-fc4a23.netlify.app" class="btn btn-primary">Click here</a>
+          </div>
+        </div>
+        <div class="card" >
+          <img class="card-img-top" src="/images/cd.png" alt="Card image" style="width:100%" height="340px">
+          <div class="card-body">
+            <h2 class="card-title">Count Down</h2>
+            <p class="card-text"> This is a simple and easy-to-use app that lets you create countdowns for upcoming events, such as holidays, birthdays, or vacations. You can customize the appearance of the countdown timer and set reminders for the event.</p>
+            <a href="https://countdown-jigar.netlify.app/" class="btn btn-primary">Click here</a>
+          </div>
+        </div>
+        <div class="card" >
+          <img class="card-img-top" src="/images/cal.png" alt="Card image" style="width:100%" height="340px">
+          <div class="card-body">
+            <h2 class="card-title">EMI Calculater</h2>
+            <p class="card-text"> The EMI calculator app typically has a user-friendly interface where users can input their loan amount, interest rate, and tenure. The app then calculates the monthly EMI that the user will have to pay.</p>
+            <a href="https://jigar-loan-cal.netlify.app/" class="btn btn-primary">Click here</a>
+          </div>
+        </div>
+        <div class="card" >
+          <img class="card-img-top" src="/images/job.png" alt="Card image" style="width:100%" height="340px">
+          <div class="card-body">
+            <h2 class="card-title">Job Application</h2>
+            <p class="card-text"> A Node.js job application form should include various fields that are essential for employers to collect from job seekers. These fields may include personal information such as name, contact details, and employment history. Additionally, the form should also provide sections for job-specific details such as the desired job position, relevant experience, and educational qualifications.</p>
+            <a href="https://job-app-8xzz.onrender.com/all" class="btn btn-primary">Click here</a>
+          </div>
+        </div>
+        <div class="card" >
+          <img class="card-img-top" src="/images/exl.png" alt="Card image" style="width:100%" height="340px">
+          <div class="card-body">
+            <h2 class="card-title">Excel Crud Task</h2>
+            <p class="card-text"> Excel is a popular spreadsheet software that allows users to store, organize, and manipulate data in a tabular format. Excel files can be created, edited, and saved in different file formats such as XLS, XLSX, CSV, and others.            </p>
+            <a href="https://task-i5em.onrender.com/" class="btn btn-primary">Click here</a>
+          </div>
+        </div>
+        <div class="card" >
+          <img class="card-img-top" src="/images/exl.png" alt="Card image" style="width:100%" height="340px">
+          <div class="card-body">
+            <h2 class="card-title">Figma Design 1</h2>
+            <p class="card-text"> Frontend Project to make better Design </p>
+            <a href="https://cheerful-gnome-8cbf37.netlify.app/" class="btn btn-primary">Click here</a>
+          </div>
+        </div>
+        <div class="card" >
+          <img class="card-img-top" src="/images/exl.png" alt="Card image" style="width:100%" height="340px">
+          <div class="card-body">
+            <h2 class="card-title">Figma Design 2 </h2>
+            <p class="card-text"> Frontend Project to make better Design </p>
+            <a href="https://unique-cuchufli-c7decb.netlify.app/" class="btn btn-primary">Click here</a>
+          </div>
+        </div>
+
+      </div>
+      <!-- <p>The .navbar-right class is used to right-align navigation bar buttons.</p> -->
+
+    </div>
   </div>
-</nav>
-  
-<div class="container">
-  <h3>Welcome <%= user.name  %></h3>
-  <!-- <p>The .navbar-right class is used to right-align navigation bar buttons.</p> -->
-</div>
+
+
 
 </body>
+
 </html>

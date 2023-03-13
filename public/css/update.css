@@ -130,9 +130,3 @@ body {
   outline: 0;
   background-color: #fc364c;
 }
-
-.par {
-  display: flex;
-  gap: 20px;
-  font-weight: 700;
-}
