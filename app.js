@@ -23,6 +23,7 @@ app.get('/register', (req, res) => {
 })
 app.get('/login', async (req, res) => {
     let solve
+    let error 
     // console.log("here");
     const token = await req.cookies['Access_token'];
     if(token){
@@ -31,7 +32,8 @@ app.get('/login', async (req, res) => {
             solve = jwt.verify(token, process.env.JWT_SECRET);
             
         } catch (error) {
-            console.log(error);
+             err = false;
+            res.render('login', { error })
         }        
     }
 
@@ -39,7 +41,7 @@ app.get('/login', async (req, res) => {
         res.redirect('/home')
     }
     else {
-        let error = false;
+          error = false;
         res.render('login', { error })
     }
 
